@@ -79,9 +79,30 @@ public class TrieImpl implements Trie {
      */
     @Override
     public boolean remove(String element) {
-        // todo impl
+        if (!contains(element)) {
+            return false;
+        }
+
+        int ix = 0;
+        Vertex cur = root;
+
+        while (ix < element.length()) {
+            if (cur.getNode(element.charAt(ix)) != null) {
+                if (cur.getStartsWithThis() == 1) {
+                    cur.setNode(element.charAt(ix), null);
+                    break;
+                }
+                cur.decStartsWithThis();
+                cur = cur.getNode(element.charAt(ix));
+                ix++;
+            } else {
+                break;
+            }
+        }
+
+
         size--;
-        return false;
+        return true;
     }
 
     /**
@@ -128,11 +149,11 @@ public class TrieImpl implements Trie {
             startsWithThis = 0;
         }
 
-        public boolean isEndOfWord() {
+        boolean isEndOfWord() {
             return isEndOfWord;
         }
 
-        public void setEndOfWord(boolean endOfWord) {
+        void setEndOfWord(boolean endOfWord) {
             isEndOfWord = endOfWord;
         }
 
@@ -162,15 +183,15 @@ public class TrieImpl implements Trie {
         }
 
 
-        public int getStartsWithThis() {
+        int getStartsWithThis() {
             return startsWithThis;
         }
 
-        public void incStartsWithThis() {
+        void incStartsWithThis() {
             startsWithThis++;
         }
 
-        public void decStartsWithThis() {
+        void decStartsWithThis() {
             startsWithThis--;
         }
     }
