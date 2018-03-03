@@ -1,5 +1,8 @@
 package ru.spbau.mit.java1.trie;
 
+/**
+ * Class for implementation of trie task.
+ */
 public class TrieImpl implements Trie {
     private static final int ALPHABET_SIZE = 26;
     private Vertex root;
@@ -44,6 +47,7 @@ public class TrieImpl implements Trie {
             cur = newVertex;
             ix++;
         }
+        cur.incStartsWithThis();
         cur.setEndOfWord(true);
 
         size++;
@@ -87,12 +91,13 @@ public class TrieImpl implements Trie {
         Vertex cur = root;
 
         while (ix < element.length()) {
-            if (cur.getNode(element.charAt(ix)) != null) {
-                if (cur.getStartsWithThis() == 1) {
+            if (cur != null) {
+                cur.decStartsWithThis();
+                Vertex next = cur.getNode(element.charAt(ix));
+                if (next != null && next.getStartsWithThis() == 1) {
                     cur.setNode(element.charAt(ix), null);
                     break;
                 }
-                cur.decStartsWithThis();
                 cur = cur.getNode(element.charAt(ix));
                 ix++;
             } else {
@@ -100,7 +105,7 @@ public class TrieImpl implements Trie {
             }
         }
 
-        if (cur != null && cur.isEndOfWord) {
+        if (ix == element.length() && cur != null && cur.isEndOfWord) {
             cur.setEndOfWord(false);
         }
 
@@ -127,7 +132,7 @@ public class TrieImpl implements Trie {
         Vertex cur = root;
 
         while (ix < prefix.length()) {
-            if (cur != null && cur.getNode(prefix.charAt(ix)) != null) {
+            if (cur != null) {
                 cur = cur.getNode(prefix.charAt(ix));
                 ix++;
             } else {
@@ -135,7 +140,9 @@ public class TrieImpl implements Trie {
             }
         }
 
-        return cur.getStartsWithThis();
+        if (cur != null)
+            return cur.getStartsWithThis();
+        return 0;
     }
 
     class Vertex {
