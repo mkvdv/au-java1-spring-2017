@@ -1,9 +1,9 @@
 package ru.spbau.mit.java1.trie;
 
 public class TrieImpl implements Trie {
-    private static int ALPHABET_SIZE = 26;
+    private static final int ALPHABET_SIZE = 26;
     private Vertex root;
-    private int size;
+    private int size; // number of words in tree
 
     TrieImpl() {
         root = new Vertex();
@@ -39,9 +39,9 @@ public class TrieImpl implements Trie {
         //insert new elements if need
         while (ix < element.length()) {
             cur.incStartsWithThis();
-            Vertex new_vx = new Vertex();
-            cur.setNode(element.charAt(ix), new_vx);
-            cur = new_vx;
+            Vertex newVertex = new Vertex();
+            cur.setNode(element.charAt(ix), newVertex);
+            cur = newVertex;
             ix++;
         }
         cur.setEndOfWord(true);
@@ -100,6 +100,9 @@ public class TrieImpl implements Trie {
             }
         }
 
+        if (cur != null && cur.isEndOfWord) {
+            cur.setEndOfWord(false);
+        }
 
         size--;
         return true;
@@ -120,27 +123,28 @@ public class TrieImpl implements Trie {
      */
     @Override
     public int howManyStartsWithPrefix(String prefix) {
-        if (contains(prefix)) {
-            return 0;
-        }
-
         int ix = 0;
         Vertex cur = root;
 
         while (ix < prefix.length()) {
-            if (cur.getNode(prefix.charAt(ix)) != null) {
+            if (cur != null && cur.getNode(prefix.charAt(ix)) != null) {
                 cur = cur.getNode(prefix.charAt(ix));
                 ix++;
+            } else {
+                return 0;
             }
         }
+
         return cur.getStartsWithThis();
     }
 
     class Vertex {
-        private Vertex upperNext[];
-        private Vertex lowerNext[];
+        private Vertex upperNext[]; // for uppercase letters
+        private Vertex lowerNext[]; // for lowercase letters
         private boolean isEndOfWord;
-        private int startsWithThis; // how Many Words Starts With Prefix, which end in this vertex
+
+        // how Many Words Starts With Prefix, which ends in this vertex
+        private int startsWithThis;
 
         Vertex() {
             upperNext = new Vertex[ALPHABET_SIZE];
@@ -166,22 +170,22 @@ public class TrieImpl implements Trie {
                 return lowerNext[c - 'a'];
             }
 
+            assert false; // unsupported symbols, terminated
             return null;
         }
 
         /**
          * Set new child in node, overide existed
          */
-        void setNode(char c, Vertex vx) {
+        void setNode(char c, Vertex vertex) {
             assert (Character.isLetter(c));
 
             if (Character.isUpperCase(c)) {
-                upperNext[c - 'A'] = vx;
+                upperNext[c - 'A'] = vertex;
             } else if (Character.isLowerCase(c)) {
-                lowerNext[c - 'a'] = vx;
+                lowerNext[c - 'a'] = vertex;
             }
         }
-
 
         int getStartsWithThis() {
             return startsWithThis;
