@@ -30,35 +30,26 @@ public class TrieImpl implements Trie {
         if (contains(element)) {
             return false;
         }
-        int ix = 0;
+
+        size++;
         Vertex cur = root;
+        cur.incStartsWithThis(); // count data for howManyStartsWithPrefix
 
-        while (ix < element.length()) {
-            if (cur.getNext(element.charAt(ix)) != null) {
-                cur.incStartsWithThis(); // count data for howManyStartsWithPrefix
-
-                cur = cur.getNext(element.charAt(ix));
-                ix++;
-            } else {
-                break;
+        for (char curChar : element.toCharArray()) {
+            if (cur.getNext(curChar) != null) {
+                cur = cur.getNext(curChar);
+                cur.incStartsWithThis();
+            } else { //insert new elements if need
+                Vertex newVertex = new Vertex();
+                cur.setNext(curChar, newVertex);
+                cur = newVertex;
+                cur.incStartsWithThis();
             }
         }
 
-        //insert new elements if need
-        while (ix < element.length()) {
-            cur.incStartsWithThis();
-
-            Vertex newVertex = new Vertex();
-            cur.setNext(element.charAt(ix), newVertex);
-
-            cur = newVertex;
-            ix++;
-        }
-
-        cur.incStartsWithThis();
         cur.setEndOfWord(true);
 
-        size++;
+
         return true;
     }
 
@@ -73,18 +64,18 @@ public class TrieImpl implements Trie {
             throw new IncorrectInputException("element argument is null");
         }
 
-        int ix = 0;
+        int charProccessed = 0;
         Vertex cur = root;
 
-        while (ix < element.length()) {
-            if (cur.getNext(element.charAt(ix)) != null) {
-                cur = cur.getNext(element.charAt(ix));
-                ix++;
+        for (char curChar : element.toCharArray()) {
+            if (cur.getNext(curChar) != null) {
+                cur = cur.getNext(curChar);
+                charProccessed++;
             } else {
                 break;
             }
         }
-        return ix == element.length() && cur.isEndOfWord();
+        return charProccessed == element.length() && cur.isEndOfWord();
     }
 
     /**
@@ -103,23 +94,21 @@ public class TrieImpl implements Trie {
         }
 
         size--;
-        int ix = 0;
         Vertex cur = root;
 
         // find first node, which child is bamboo - and cut off bamboo
-        while (ix < element.length()) {
+        for (char curChar : element.toCharArray()) {
             if (cur != null) {
                 cur.decStartsWithThis();
-                Vertex next = cur.getNext(element.charAt(ix));
+                Vertex next = cur.getNext(curChar);
 
                 // check that last child is bamboo - if it is - cut it and return
                 if (next != null && next.getStartsWithThis() == 1) {
-                    cur.setNext(element.charAt(ix), null);
+                    cur.setNext(curChar, null);
                     return true;
                 }
 
-                cur = cur.getNext(element.charAt(ix));
-                ix++;
+                cur = cur.getNext(curChar);
             } else {
                 break;
             }
@@ -127,7 +116,7 @@ public class TrieImpl implements Trie {
 
         // if u have not cut any bamboo - ex, we delete "abc" from trie {"abc", "abcd"}
         // so we not delete any node, but must mark it aa not end of word
-        if (ix == element.length() && cur != null && cur.isEndOfWord) { // delete or not ??
+        if (cur != null && cur.isEndOfWord) { // delete or not ??
             cur.setEndOfWord(false);
         }
 
