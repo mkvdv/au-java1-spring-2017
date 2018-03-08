@@ -182,8 +182,6 @@ public class TrieImpl implements Trie {
         }
 
         Vertex getNext(char c) throws IncorrectInputException {
-            assert (Character.isLetter(c));
-
             if (Character.isUpperCase(c)) {
                 return upperNext[c - 'A'];
             } else if (Character.isLowerCase(c)) {
@@ -197,8 +195,6 @@ public class TrieImpl implements Trie {
          * Set new child in node, override existed
          */
         void setNext(char c, Vertex vertex) throws IncorrectInputException {
-            assert (Character.isLetter(c));
-
             if (Character.isUpperCase(c)) {
                 upperNext[c - 'A'] = vertex;
             } else if (Character.isLowerCase(c)) {

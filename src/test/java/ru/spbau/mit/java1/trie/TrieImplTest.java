@@ -219,4 +219,16 @@ public class TrieImplTest {
             fail();
         }
     }
+
+    @Test
+    public void testBadSYmbol() {
+        TrieImpl t = instance();
+        String s1 = "time7:40";
+
+        try {
+            t.add(s1);
+            fail();
+        } catch (IncorrectInputException e) {
+        }
+    }
 }
