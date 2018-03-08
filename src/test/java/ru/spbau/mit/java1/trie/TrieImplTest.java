@@ -1,7 +1,9 @@
 package ru.spbau.mit.java1.trie;
 
-import org.junit.Assert;
 import org.junit.Test;
+import ru.spbau.mit.java1.trie.exceptions.IncorrectInputException;
+
+import static org.junit.Assert.*;
 
 public class TrieImplTest {
 
@@ -19,32 +21,36 @@ public class TrieImplTest {
         TrieImpl t = instance();
 
         int counter = 0;
-        for (int i = 0; i < 26; i++) {
-            String small = Character.toString((char) ('a' + i));
-            t.add(small);
-            counter++;
-            Assert.assertEquals(true, t.contains(small));
-            Assert.assertEquals(counter, t.size());
+        try {
+            for (int i = 0; i < 26; i++) {
+                String small = Character.toString((char) ('a' + i));
+                t.add(small);
+                counter++;
+                assertTrue(t.contains(small));
+                assertEquals(counter, t.size());
 
-            String big = Character.toString((char) ('A' + i));
-            t.add(big);
-            counter++;
-            Assert.assertEquals(true, t.contains(big));
-            Assert.assertEquals(counter, t.size());
-        }
+                String big = Character.toString((char) ('A' + i));
+                t.add(big);
+                counter++;
+                assertTrue(t.contains(big));
+                assertEquals(counter, t.size());
+            }
 
-        for (int i = 0; i < 26; i++) {
-            String small = Character.toString((char) ('a' + i));
-            t.remove(small);
-            counter--;
-            Assert.assertEquals(false, t.contains(small));
-            Assert.assertEquals(counter, t.size());
+            for (int i = 0; i < 26; i++) {
+                String small = Character.toString((char) ('a' + i));
+                t.remove(small);
+                counter--;
+                assertFalse(t.contains(small));
+                assertEquals(counter, t.size());
 
-            String big = Character.toString((char) ('A' + i));
-            t.remove(big);
-            counter--;
-            Assert.assertEquals(false, t.contains(big));
-            Assert.assertEquals(counter, t.size());
+                String big = Character.toString((char) ('A' + i));
+                t.remove(big);
+                counter--;
+                assertFalse(t.contains(big));
+                assertEquals(counter, t.size());
+            }
+        } catch (IncorrectInputException e) {
+            fail();
         }
     }
 
@@ -54,21 +60,25 @@ public class TrieImplTest {
         TrieImpl t = instance();
         String s = "abc";
 
-        Assert.assertEquals(false, t.contains(s));
-        Assert.assertEquals(0, t.size());
-        Assert.assertEquals(false, t.remove(s));
-        Assert.assertEquals(0, t.size());
+        try {
+            assertFalse(t.contains(s));
+            assertEquals(0, t.size());
+            assertFalse(t.remove(s));
+            assertEquals(0, t.size());
 
-        Assert.assertEquals(true, t.add(s));
-        Assert.assertEquals(true, t.contains(s));
-        Assert.assertEquals(1, t.size());
+            assertTrue(t.add(s));
+            assertTrue(t.contains(s));
+            assertEquals(1, t.size());
 
-        Assert.assertEquals(false, t.add(s));
-        Assert.assertEquals(true, t.contains(s));
+            assertFalse(t.add(s));
+            assertTrue(t.contains(s));
 
-        Assert.assertEquals(true, t.remove(s));
-        Assert.assertEquals(0, t.size());
-        Assert.assertEquals(false, t.contains(s));
+            assertTrue(t.remove(s));
+            assertEquals(0, t.size());
+            assertFalse(t.contains(s));
+        } catch (IncorrectInputException e) {
+            fail();
+        }
     }
 
     @Test
@@ -76,21 +86,25 @@ public class TrieImplTest {
         TrieImpl t = instance();
         String s = "abc";
 
-        Assert.assertEquals(true, t.add(s));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("ab"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("a"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("abc"));
+        try {
+            assertTrue(t.add(s));
+            assertEquals(1, t.howManyStartsWithPrefix("ab"));
+            assertEquals(1, t.howManyStartsWithPrefix("a"));
+            assertEquals(1, t.howManyStartsWithPrefix("abc"));
 
-        Assert.assertEquals(false, t.add(s));
-        Assert.assertEquals(true, t.contains(s));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("ab"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("a"));
+            assertFalse(t.add(s));
+            assertTrue(t.contains(s));
+            assertEquals(1, t.howManyStartsWithPrefix("ab"));
+            assertEquals(1, t.howManyStartsWithPrefix("a"));
 
-        Assert.assertEquals(true, t.remove(s));
-        Assert.assertEquals(false, t.contains(s));
-        Assert.assertEquals(0, t.size());
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("ab"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("a"));
+            assertTrue(t.remove(s));
+            assertFalse(t.contains(s));
+            assertEquals(0, t.size());
+            assertEquals(0, t.howManyStartsWithPrefix("ab"));
+            assertEquals(0, t.howManyStartsWithPrefix("a"));
+        } catch (IncorrectInputException e) {
+            fail();
+        }
     }
 
     @Test
@@ -100,58 +114,61 @@ public class TrieImplTest {
         String s1 = "aBcde";
         String s2 = "aBcd";
         String s3 = "aBcdf";
+        try {
+            assertTrue(t.add(s1));
+            assertTrue(t.contains(s1));
+            assertEquals(1, t.size());
+            assertEquals(1, t.howManyStartsWithPrefix("aBcd"));
+            assertEquals(0, t.howManyStartsWithPrefix("abcd"));
+            assertEquals(1, t.howManyStartsWithPrefix("a"));
 
-        Assert.assertEquals(true, t.add(s1));
-        Assert.assertEquals(true, t.contains(s1));
-        Assert.assertEquals(1, t.size());
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aBcd"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("abcd"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("a"));
+            assertTrue(t.add(s2));
+            assertTrue(t.contains(s2));
+            assertEquals(2, t.size());
+            assertEquals(2, t.howManyStartsWithPrefix("a"));
+            assertEquals(2, t.howManyStartsWithPrefix("aBcd"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
 
-        Assert.assertEquals(true, t.add(s2));
-        Assert.assertEquals(true, t.contains(s2));
-        Assert.assertEquals(2, t.size());
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("a"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("aBcd"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
+            assertTrue(t.remove(s1));
+            assertFalse(t.contains(s1));
+            assertTrue(t.contains(s2));
+            assertEquals(1, t.size());
 
-        Assert.assertEquals(true, t.remove(s1));
-        Assert.assertEquals(false, t.contains(s1));
-        Assert.assertEquals(true, t.contains(s2));
-        Assert.assertEquals(1, t.size());
+            assertEquals(1, t.howManyStartsWithPrefix("aB"));
+            assertEquals(1, t.howManyStartsWithPrefix("aBcd"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
 
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aB"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aBcd"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
+            assertTrue(t.add(s3));
+            assertTrue(t.contains(s3));
+            assertTrue(t.contains(s2));
+            assertFalse(t.contains(s1));
+            assertEquals(2, t.size());
 
-        Assert.assertEquals(true, t.add(s3));
-        Assert.assertEquals(true, t.contains(s3));
-        Assert.assertEquals(true, t.contains(s2));
-        Assert.assertEquals(false, t.contains(s1));
-        Assert.assertEquals(2, t.size());
+            assertEquals(2, t.howManyStartsWithPrefix("aB"));
+            assertEquals(2, t.howManyStartsWithPrefix("aBcd"));
+            assertEquals(1, t.howManyStartsWithPrefix("aBcdf"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
 
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("aB"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("aBcd"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aBcdf"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdp"));
+            assertTrue(t.remove(s2));
+            assertFalse(t.contains(s2));
+            assertFalse(t.contains(s1));
+            assertTrue(t.contains(s3));
+            assertEquals(1, t.size());
+            assertEquals(1, t.howManyStartsWithPrefix("aB"));
+            assertEquals(1, t.howManyStartsWithPrefix("aBcdf"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdgp"));
 
-        Assert.assertEquals(true, t.remove(s2));
-        Assert.assertEquals(false, t.contains(s2));
-        Assert.assertEquals(false, t.contains(s1));
-        Assert.assertEquals(true, t.contains(s3));
-        Assert.assertEquals(1, t.size());
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aB"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("aBcdf"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdgp"));
-
-        Assert.assertEquals(true, t.remove(s3));
-        Assert.assertEquals(false, t.contains(s2));
-        Assert.assertEquals(false, t.contains(s1));
-        Assert.assertEquals(false, t.contains(s3));
-        Assert.assertEquals(0, t.size());
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aB"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdf"));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("aBcdgp"));
+            assertTrue(t.remove(s3));
+            assertFalse(t.contains(s2));
+            assertFalse(t.contains(s1));
+            assertFalse(t.contains(s3));
+            assertEquals(0, t.size());
+            assertEquals(0, t.howManyStartsWithPrefix("aB"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdf"));
+            assertEquals(0, t.howManyStartsWithPrefix("aBcdgp"));
+        } catch (IncorrectInputException e) {
+            fail();
+        }
     }
 
     @Test
@@ -163,39 +180,43 @@ public class TrieImplTest {
         String s4 = "buzo";
         String s5 = "fizzzika";
 
-        Assert.assertEquals(true, t.add(s1));
-        Assert.assertEquals(true, t.add(s2));
-        Assert.assertEquals(true, t.add(s4));
-        Assert.assertEquals(true, t.add(s5));
+        try {
+            assertTrue(t.add(s1));
+            assertTrue(t.add(s2));
+            assertTrue(t.add(s4));
+            assertTrue(t.add(s5));
 
-        Assert.assertEquals(false, t.contains(s3));
-        Assert.assertEquals(true, t.add(s3));
-        Assert.assertEquals(5, t.size());
+            assertFalse(t.contains(s3));
+            assertTrue(t.add(s3));
+            assertEquals(5, t.size());
 
-        Assert.assertEquals(5, t.howManyStartsWithPrefix(""));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("fi"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("fizz"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("buzz"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("buz"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("bu"));
-        Assert.assertEquals(3, t.howManyStartsWithPrefix("b"));
+            assertEquals(5, t.howManyStartsWithPrefix(""));
+            assertEquals(2, t.howManyStartsWithPrefix("fi"));
+            assertEquals(2, t.howManyStartsWithPrefix("fizz"));
+            assertEquals(1, t.howManyStartsWithPrefix("buzz"));
+            assertEquals(2, t.howManyStartsWithPrefix("buz"));
+            assertEquals(2, t.howManyStartsWithPrefix("bu"));
+            assertEquals(3, t.howManyStartsWithPrefix("b"));
 
-        Assert.assertEquals(true, t.remove(s2));
-        Assert.assertEquals(false, t.contains(s2));
-        Assert.assertEquals(4, t.size());
-        Assert.assertEquals(4, t.howManyStartsWithPrefix(""));
-        Assert.assertEquals(0, t.howManyStartsWithPrefix("buzz"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("buz"));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("bu"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("b"));
+            assertTrue(t.remove(s2));
+            assertFalse(t.contains(s2));
+            assertEquals(4, t.size());
+            assertEquals(4, t.howManyStartsWithPrefix(""));
+            assertEquals(0, t.howManyStartsWithPrefix("buzz"));
+            assertEquals(1, t.howManyStartsWithPrefix("buz"));
+            assertEquals(1, t.howManyStartsWithPrefix("bu"));
+            assertEquals(2, t.howManyStartsWithPrefix("b"));
 
-        Assert.assertEquals(true, t.add(s2));
-        Assert.assertEquals(true, t.contains(s2));
-        Assert.assertEquals(5, t.size());
-        Assert.assertEquals(5, t.howManyStartsWithPrefix(""));
-        Assert.assertEquals(1, t.howManyStartsWithPrefix("buzz"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("buz"));
-        Assert.assertEquals(2, t.howManyStartsWithPrefix("bu"));
-        Assert.assertEquals(3, t.howManyStartsWithPrefix("b"));
+            assertTrue(t.add(s2));
+            assertTrue(t.contains(s2));
+            assertEquals(5, t.size());
+            assertEquals(5, t.howManyStartsWithPrefix(""));
+            assertEquals(1, t.howManyStartsWithPrefix("buzz"));
+            assertEquals(2, t.howManyStartsWithPrefix("buz"));
+            assertEquals(2, t.howManyStartsWithPrefix("bu"));
+            assertEquals(3, t.howManyStartsWithPrefix("b"));
+        } catch (IncorrectInputException e) {
+            fail();
+        }
     }
 }

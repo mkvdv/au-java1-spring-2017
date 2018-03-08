@@ -1,11 +1,13 @@
 package ru.spbau.mit.java1.trie;
 
+import ru.spbau.mit.java1.trie.exceptions.IncorrectInputException;
+
 /**
  * Class for implementation of trie task.
  */
 public class TrieImpl implements Trie {
     private static final int ALPHABET_SIZE = 26;
-    private Vertex root;
+    private final Vertex root;
     private int size; // number of words in tree
 
     TrieImpl() {
@@ -21,7 +23,10 @@ public class TrieImpl implements Trie {
      * element
      */
     @Override
-    public boolean add(String element) {
+    public boolean add(String element) throws IncorrectInputException {
+        if (element == null) {
+            throw new IncorrectInputException("element argument is null");
+        }
         if (contains(element)) {
             return false;
         }
@@ -29,10 +34,10 @@ public class TrieImpl implements Trie {
         Vertex cur = root;
 
         while (ix < element.length()) {
-            if (cur.getNode(element.charAt(ix)) != null) {
-                // count data for howManyStartsWithPrefix
-                cur.incStartsWithThis();
-                cur = cur.getNode(element.charAt(ix));
+            if (cur.getNext(element.charAt(ix)) != null) {
+                cur.incStartsWithThis(); // count data for howManyStartsWithPrefix
+
+                cur = cur.getNext(element.charAt(ix));
                 ix++;
             } else {
                 break;
@@ -42,11 +47,14 @@ public class TrieImpl implements Trie {
         //insert new elements if need
         while (ix < element.length()) {
             cur.incStartsWithThis();
+
             Vertex newVertex = new Vertex();
-            cur.setNode(element.charAt(ix), newVertex);
+            cur.setNext(element.charAt(ix), newVertex);
+
             cur = newVertex;
             ix++;
         }
+
         cur.incStartsWithThis();
         cur.setEndOfWord(true);
 
@@ -60,13 +68,17 @@ public class TrieImpl implements Trie {
      * @param element
      */
     @Override
-    public boolean contains(String element) {
+    public boolean contains(String element) throws IncorrectInputException {
+        if (element == null) {
+            throw new IncorrectInputException("element argument is null");
+        }
+
         int ix = 0;
         Vertex cur = root;
 
         while (ix < element.length()) {
-            if (cur.getNode(element.charAt(ix)) != null) {
-                cur = cur.getNode(element.charAt(ix));
+            if (cur.getNext(element.charAt(ix)) != null) {
+                cur = cur.getNext(element.charAt(ix));
                 ix++;
             } else {
                 break;
@@ -82,34 +94,43 @@ public class TrieImpl implements Trie {
      * @return <tt>true</tt> if this set contained the specified element
      */
     @Override
-    public boolean remove(String element) {
+    public boolean remove(String element) throws IncorrectInputException {
+        if (element == null) {
+            throw new IncorrectInputException("element argument is null");
+        }
         if (!contains(element)) {
             return false;
         }
 
+        size--;
         int ix = 0;
         Vertex cur = root;
 
+        // find first node, which child is bamboo - and cut off bamboo
         while (ix < element.length()) {
             if (cur != null) {
                 cur.decStartsWithThis();
-                Vertex next = cur.getNode(element.charAt(ix));
+                Vertex next = cur.getNext(element.charAt(ix));
+
+                // check that last child is bamboo - if it is - cut it and return
                 if (next != null && next.getStartsWithThis() == 1) {
-                    cur.setNode(element.charAt(ix), null);
-                    break;
+                    cur.setNext(element.charAt(ix), null);
+                    return true;
                 }
-                cur = cur.getNode(element.charAt(ix));
+
+                cur = cur.getNext(element.charAt(ix));
                 ix++;
             } else {
                 break;
             }
         }
 
-        if (ix == element.length() && cur != null && cur.isEndOfWord) {
+        // if u have not cut any bamboo - ex, we delete "abc" from trie {"abc", "abcd"}
+        // so we not delete any node, but must mark it aa not end of word
+        if (ix == element.length() && cur != null && cur.isEndOfWord) { // delete or not ??
             cur.setEndOfWord(false);
         }
 
-        size--;
         return true;
     }
 
@@ -127,13 +148,16 @@ public class TrieImpl implements Trie {
      * @param prefix
      */
     @Override
-    public int howManyStartsWithPrefix(String prefix) {
+    public int howManyStartsWithPrefix(String prefix) throws IncorrectInputException {
+        if (prefix == null) {
+            throw new IncorrectInputException("element argument is null");
+        }
         int ix = 0;
         Vertex cur = root;
 
         while (ix < prefix.length()) {
             if (cur != null) {
-                cur = cur.getNode(prefix.charAt(ix));
+                cur = cur.getNext(prefix.charAt(ix));
                 ix++;
             } else {
                 return 0;
@@ -168,7 +192,7 @@ public class TrieImpl implements Trie {
             isEndOfWord = endOfWord;
         }
 
-        Vertex getNode(char c) {
+        Vertex getNext(char c) throws IncorrectInputException {
             assert (Character.isLetter(c));
 
             if (Character.isUpperCase(c)) {
@@ -177,20 +201,21 @@ public class TrieImpl implements Trie {
                 return lowerNext[c - 'a'];
             }
 
-            assert false; // unsupported symbols, terminated
-            return null;
+            throw new IncorrectInputException("unsupported character");
         }
 
         /**
-         * Set new child in node, overide existed
+         * Set new child in node, override existed
          */
-        void setNode(char c, Vertex vertex) {
+        void setNext(char c, Vertex vertex) throws IncorrectInputException {
             assert (Character.isLetter(c));
 
             if (Character.isUpperCase(c)) {
                 upperNext[c - 'A'] = vertex;
             } else if (Character.isLowerCase(c)) {
                 lowerNext[c - 'a'] = vertex;
+            } else {
+                throw new IncorrectInputException("unsupported character");
             }
         }
 
@@ -204,6 +229,7 @@ public class TrieImpl implements Trie {
 
         void decStartsWithThis() {
             startsWithThis--;
+            assert startsWithThis >= 0;
         }
     }
 }
