@@ -1,6 +1,5 @@
 package ru.spbau.mit.java1.trie;
 
-import ru.spbau.mit.java1.trie.exceptions.IncorrectInputException;
 
 /**
  * Class for trie task.
@@ -13,19 +12,19 @@ public interface Trie {
      * @return <tt>true</tt> if this set did not already contain the specified
      * element
      */
-    boolean add(String element) throws IncorrectInputException;
+    boolean add(String element) throws IllegalArgumentException;
 
     /**
      * Expected complexity: O(|element|)
      */
-    boolean contains(String element) throws IncorrectInputException;
+    boolean contains(String element) throws IllegalArgumentException;
 
     /**
      * Expected complexity: O(|element|)
      *
      * @return <tt>true</tt> if this set contained the specified element
      */
-    boolean remove(String element) throws IncorrectInputException;
+    boolean remove(String element) throws IllegalArgumentException;
 
     /**
      * Expected complexity: O(1)
@@ -35,5 +34,5 @@ public interface Trie {
     /**
      * Expected complexity: O(|prefix|)
      */
-    int howManyStartsWithPrefix(String prefix) throws IncorrectInputException;
+    int howManyStartsWithPrefix(String prefix) throws IllegalArgumentException;
 }

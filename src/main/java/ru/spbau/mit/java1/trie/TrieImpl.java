@@ -1,6 +1,5 @@
 package ru.spbau.mit.java1.trie;
 
-import ru.spbau.mit.java1.trie.exceptions.IncorrectInputException;
 
 /**
  * Class for implementation of trie task.
@@ -23,9 +22,9 @@ public class TrieImpl implements Trie {
      * element
      */
     @Override
-    public boolean add(String element) throws IncorrectInputException {
+    public boolean add(String element) throws IllegalArgumentException {
         if (element == null) {
-            throw new IncorrectInputException("element argument is null");
+            throw new IllegalArgumentException("element argument is null");
         }
         if (contains(element)) {
             return false;
@@ -59,9 +58,9 @@ public class TrieImpl implements Trie {
      * @param element
      */
     @Override
-    public boolean contains(String element) throws IncorrectInputException {
+    public boolean contains(String element) throws IllegalArgumentException {
         if (element == null) {
-            throw new IncorrectInputException("element argument is null");
+            throw new IllegalArgumentException("element argument is null");
         }
 
         int charProccessed = 0;
@@ -85,9 +84,9 @@ public class TrieImpl implements Trie {
      * @return <tt>true</tt> if this set contained the specified element
      */
     @Override
-    public boolean remove(String element) throws IncorrectInputException {
+    public boolean remove(String element) throws IllegalArgumentException {
         if (element == null) {
-            throw new IncorrectInputException("element argument is null");
+            throw new IllegalArgumentException("element argument is null");
         }
         if (!contains(element)) {
             return false;
@@ -137,9 +136,9 @@ public class TrieImpl implements Trie {
      * @param prefix
      */
     @Override
-    public int howManyStartsWithPrefix(String prefix) throws IncorrectInputException {
+    public int howManyStartsWithPrefix(String prefix) throws IllegalArgumentException {
         if (prefix == null) {
-            throw new IncorrectInputException("element argument is null");
+            throw new IllegalArgumentException("element argument is null");
         }
         int ix = 0;
         Vertex cur = root;
@@ -181,26 +180,26 @@ public class TrieImpl implements Trie {
             isEndOfWord = endOfWord;
         }
 
-        Vertex getNext(char c) throws IncorrectInputException {
+        Vertex getNext(char c) throws IllegalArgumentException {
             if (Character.isUpperCase(c)) {
                 return upperNext[c - 'A'];
             } else if (Character.isLowerCase(c)) {
                 return lowerNext[c - 'a'];
             }
 
-            throw new IncorrectInputException("unsupported character");
+            throw new IllegalArgumentException("unsupported character");
         }
 
         /**
          * Set new child in node, override existed
          */
-        void setNext(char c, Vertex vertex) throws IncorrectInputException {
+        void setNext(char c, Vertex vertex) throws IllegalArgumentException {
             if (Character.isUpperCase(c)) {
                 upperNext[c - 'A'] = vertex;
             } else if (Character.isLowerCase(c)) {
                 lowerNext[c - 'a'] = vertex;
             } else {
-                throw new IncorrectInputException("unsupported character");
+                throw new IllegalArgumentException("unsupported character");
             }
         }
 

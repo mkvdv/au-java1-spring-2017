@@ -1,7 +1,6 @@
 package ru.spbau.mit.java1.trie;
 
 import org.junit.Test;
-import ru.spbau.mit.java1.trie.exceptions.IncorrectInputException;
 
 import static org.junit.Assert.*;
 
@@ -49,7 +48,7 @@ public class TrieImplTest {
                 assertFalse(t.contains(big));
                 assertEquals(counter, t.size());
             }
-        } catch (IncorrectInputException e) {
+        } catch (IllegalArgumentException e) {
             fail();
         }
     }
@@ -76,7 +75,7 @@ public class TrieImplTest {
             assertTrue(t.remove(s));
             assertEquals(0, t.size());
             assertFalse(t.contains(s));
-        } catch (IncorrectInputException e) {
+        } catch (IllegalArgumentException e) {
             fail();
         }
     }
@@ -102,7 +101,7 @@ public class TrieImplTest {
             assertEquals(0, t.size());
             assertEquals(0, t.howManyStartsWithPrefix("ab"));
             assertEquals(0, t.howManyStartsWithPrefix("a"));
-        } catch (IncorrectInputException e) {
+        } catch (IllegalArgumentException e) {
             fail();
         }
     }
@@ -166,7 +165,7 @@ public class TrieImplTest {
             assertEquals(0, t.howManyStartsWithPrefix("aB"));
             assertEquals(0, t.howManyStartsWithPrefix("aBcdf"));
             assertEquals(0, t.howManyStartsWithPrefix("aBcdgp"));
-        } catch (IncorrectInputException e) {
+        } catch (IllegalArgumentException e) {
             fail();
         }
     }
@@ -215,20 +214,16 @@ public class TrieImplTest {
             assertEquals(2, t.howManyStartsWithPrefix("buz"));
             assertEquals(2, t.howManyStartsWithPrefix("bu"));
             assertEquals(3, t.howManyStartsWithPrefix("b"));
-        } catch (IncorrectInputException e) {
+        } catch (IllegalArgumentException e) {
             fail();
         }
     }
 
-    @Test
-    public void testBadSYmbol() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadSYmbol() throws IllegalArgumentException {
         TrieImpl t = instance();
         String s1 = "time7:40";
 
-        try {
-            t.add(s1);
-            fail();
-        } catch (IncorrectInputException e) {
-        }
+        t.add(s1);
     }
 }
