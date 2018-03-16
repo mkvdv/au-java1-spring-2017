@@ -1,6 +1,8 @@
 package dict;
 
 
+import org.jetbrains.annotations.NotNull;
+
 public interface Dictionary {
 
     // хеш-таблица, использующая список
@@ -11,21 +13,21 @@ public interface Dictionary {
     int size();
 
     // true, если такой ключ содержится в таблице
-    boolean contains(String key);
+    boolean contains(@NotNull String key);
 
     // возвращает значение, хранимое по ключу key
     // если такого нет, возвращает null
-    String get(String key);
+    String get(@NotNull String key);
 
     // положить по ключу key значение value
     // и вернуть ранее хранимое, либо null;
     // провести рехеширование по необходимости
-    String put(String key, String value);
+    String put(@NotNull String key, @NotNull String value);
 
     // забыть про пару key-value для переданного key
     // и вернуть забытое value, либо null, если такой пары не было;
     // провести рехеширование по необходимости
-    String remove(String key);
+    String remove(@NotNull String key);
 
     // забыть про все пары key-value
     void clear();

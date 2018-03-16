@@ -2,11 +2,24 @@ package dict;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+
 public class DictionaryImpl implements Dictionary {
+    private final int maxChainLength;
+    private int size = 0;
+    private ArrayList<LinkedList<String>> table;
+
+    DictionaryImpl(int maxChainLength) {
+        if (maxChainLength < 0) {
+            throw new IllegalArgumentException();
+        }
+        this.maxChainLength = maxChainLength;
+    }
+
     @Override
     public int size() {
-        // todo impl
-        return 0;
+        return size;
     }
 
     @Override
