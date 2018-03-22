@@ -1,4 +1,4 @@
-package dict;
+package ru.spbau.mit.java1.dict;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class DictionaryImpl implements Dictionary {
+    private static final double MIN_FILL_FACTOR = 0.05; // пусть заполнена не менее чем на 5%
+    private static final int DEFAULT_MAX_SIZE = 64; // 2 ** 7
     private final int maxChainLength;
-    private final double MIN_FILL_FACTOR = 0.1;
-    private final int DEFAULT_MAX_SIZE = 64;
-
-    private int maxSize = DEFAULT_MAX_SIZE; // 2 ** 7
+    private int maxSize = DEFAULT_MAX_SIZE;
     private int size = 0;
     private ArrayList<LinkedList<Node>> table = new ArrayList<>(maxSize);
 
-    DictionaryImpl(int maxChainLength) {
+    public DictionaryImpl(int maxChainLength) {
         if (maxChainLength < 0) {
             throw new IllegalArgumentException();
         }
@@ -94,7 +93,7 @@ public class DictionaryImpl implements Dictionary {
 
     private void rehash(int new_max_size) {
         assert new_max_size > 0;
-        System.out.println("Rehash with new size = " + new_max_size);
+
         maxSize = new_max_size; // so hash will be another
         ArrayList<LinkedList<Node>> new_table = new ArrayList<>(new_max_size);
 
@@ -112,6 +111,14 @@ public class DictionaryImpl implements Dictionary {
         table = new_table;
     }
 
+    @Override
+    public void clear() {
+        for (LinkedList<Node> chain : table) {
+            chain.clear();
+        }
+        size = 0;
+    }
+
     // return ix of node with this key in chain, else -1 if not exist
     private int find_key(LinkedList<Node> chain, String key) {
         for (int ix = 0; ix < chain.size(); ix++) {
@@ -122,11 +129,6 @@ public class DictionaryImpl implements Dictionary {
         }
 
         return -1; // not found
-    }
-
-    @Override
-    public void clear() {
-        table.clear();
     }
 
     private int myHash(@NotNull String key) {

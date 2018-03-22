@@ -1,4 +1,4 @@
-package dict;
+package ru.spbau.mit.java1.dict;
 
 
 import org.jetbrains.annotations.NotNull;
