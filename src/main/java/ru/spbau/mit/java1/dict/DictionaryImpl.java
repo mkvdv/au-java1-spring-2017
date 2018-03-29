@@ -22,7 +22,6 @@ public class DictionaryImpl implements Dictionary {
         for (int i = 0; i < maxSize; i++) {
             table.add(new LinkedList<>());
         }
-
     }
 
     @Override
@@ -32,17 +31,18 @@ public class DictionaryImpl implements Dictionary {
 
     @Override
     public boolean contains(@NotNull String key) {
-        int list_ix = myHash(key);
-        return find_key(table.get(list_ix), key) != -1;
+        int indexInList = myHash(key);
+        int indexInChain = getKeyIndexInChain(table.get(indexInList), key);
+        return indexInChain != -1;
     }
 
     @Override
     public String get(@NotNull String key) {
-        int listIx = myHash(key);
-        int stringIx = find_key(table.get(listIx), key);
+        int indexInList = myHash(key);
+        int indexInChain = getKeyIndexInChain(table.get(indexInList), key);
 
-        if (stringIx != -1) {
-            return table.get(listIx).get(stringIx).value;
+        if (indexInChain != -1) {
+            return table.get(indexInList).get(indexInChain).value;
         } else {
             return null;
         }
@@ -51,12 +51,12 @@ public class DictionaryImpl implements Dictionary {
     @Override
     public String put(@NotNull String key, @NotNull String value) {
         LinkedList<Node> chain = table.get(myHash(key));
-        int string_ix = find_key(chain, key);
+        int indexInChain = getKeyIndexInChain(chain, key);
 
         String prev = null;
-        if (string_ix != -1) { // contains
-            prev = chain.get(string_ix).value;
-            chain.set(string_ix, new Node(key, value));
+        if (indexInChain != -1) { // contains
+            prev = chain.get(indexInChain).value;
+            chain.set(indexInChain, new Node(key, value));
         } else {
             if (chain.size() < maxChainLength && size < maxSize) {
                 chain.add(new Node(key, value));
@@ -74,41 +74,43 @@ public class DictionaryImpl implements Dictionary {
     @Override
     public String remove(@NotNull String key) {
         LinkedList<Node> chain = table.get(myHash(key));
-        int string_ix = find_key(chain, key);
+        int indexInChain = getKeyIndexInChain(chain, key);
 
         String value = null;
-        if (string_ix != -1) { // contains
-            value = chain.get(string_ix).value; // save for returning
+        if (indexInChain != -1) { // contains
+            value = chain.get(indexInChain).value; // save for returning
 
             if ((double) size / maxSize < MIN_FILL_FACTOR) {
                 rehash(size / 2); // reduce size
             }
-            chain = table.get(myHash(key));
-            chain.remove(string_ix);
+            chain = table.get(myHash(key)); // they can change after rehash
+            indexInChain = getKeyIndexInChain(chain, key);
+
+            chain.remove(indexInChain);
             size--;
         }
 
         return value;
     }
 
-    private void rehash(int new_max_size) {
-        assert new_max_size > 0;
+    private void rehash(int newMaxSize) {
+        assert newMaxSize > 0;
 
-        maxSize = new_max_size; // so hash will be another
-        ArrayList<LinkedList<Node>> new_table = new ArrayList<>(new_max_size);
+        maxSize = newMaxSize; // so hash will be another
+        ArrayList<LinkedList<Node>> newTable = new ArrayList<>(newMaxSize);
 
         for (int i = 0; i < maxSize; i++) {
-            new_table.add(new LinkedList<>());
+            newTable.add(new LinkedList<>());
         }
 
-        for (LinkedList<Node> old_chain : table) {
-            for (Node old_node : old_chain) {
-                LinkedList<Node> new_chain = new_table.get(myHash(old_node.key)); // new hash
-                new_chain.add(old_node);
+        for (LinkedList<Node> oldChain : table) {
+            for (Node oldNode : oldChain) {
+                LinkedList<Node> newChain = newTable.get(myHash(oldNode.key)); // new hash
+                newChain.add(oldNode);
             }
         }
 
-        table = new_table;
+        table = newTable;
     }
 
     @Override
@@ -119,8 +121,7 @@ public class DictionaryImpl implements Dictionary {
         size = 0;
     }
 
-    // return ix of node with this key in chain, else -1 if not exist
-    private int find_key(LinkedList<Node> chain, String key) {
+    private int getKeyIndexInChain(LinkedList<Node> chain, String key) {
         for (int ix = 0; ix < chain.size(); ix++) {
             Node node = chain.get(ix);
             if (node.equals(key)) {
@@ -152,8 +153,8 @@ public class DictionaryImpl implements Dictionary {
             return this.key.equals(other.key);
         }
 
-        public boolean equals(@NotNull String other_key) {
-            return this.key.equals(other_key);
+        public boolean equals(@NotNull String otherKey) {
+            return this.key.equals(otherKey);
         }
 
         public String toString() {
