@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class DictionaryImpl implements Dictionary {
-    private static final double MIN_FILL_FACTOR = 0.05; // пусть заполнена не менее чем на 5%
-    private static final int DEFAULT_MAX_SIZE = 64; // 2 ** 7
+    private static final double MIN_FILL_FACTOR = 0.25; // пусть заполнена не менее чем на 25%
+    private static final int DEFAULT_MAX_SIZE = 64; // 2 ** 7, минимальный размер таблицы
     private final int maxChainLength;
     private int maxSize = DEFAULT_MAX_SIZE;
     private int size = 0;
     private ArrayList<LinkedList<Node>> table = new ArrayList<>(maxSize);
 
-    public DictionaryImpl(int maxChainLength) {
+    DictionaryImpl(int maxChainLength) {
         if (maxChainLength < 0) {
             throw new IllegalArgumentException();
         }
@@ -80,7 +80,7 @@ public class DictionaryImpl implements Dictionary {
         if (indexInChain != -1) { // contains
             value = chain.get(indexInChain).value; // save for returning
 
-            if ((double) size / maxSize < MIN_FILL_FACTOR) {
+            if ((double) size / maxSize < MIN_FILL_FACTOR && size > DEFAULT_MAX_SIZE) {
                 rehash(size / 2); // reduce size
             }
             chain = table.get(myHash(key)); // they can change after rehash
@@ -153,7 +153,7 @@ public class DictionaryImpl implements Dictionary {
             return this.key.equals(other.key);
         }
 
-        public boolean equals(@NotNull String otherKey) {
+        boolean equals(@NotNull String otherKey) {
             return this.key.equals(otherKey);
         }
 

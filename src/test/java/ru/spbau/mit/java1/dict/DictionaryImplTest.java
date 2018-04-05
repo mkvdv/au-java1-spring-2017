@@ -1,14 +1,12 @@
-package ru.spbau.mit.java1.ddict;
+package ru.spbau.mit.java1.dict;
 
 import org.junit.Test;
-import ru.spbau.mit.java1.dict.Dictionary;
-import ru.spbau.mit.java1.dict.DictionaryImpl;
 
 import static org.junit.Assert.*;
 
 public class DictionaryImplTest {
 
-    private static DictionaryImpl instance() {
+    private static Dictionary instance() {
         return new DictionaryImpl(10);
     }
 
@@ -46,6 +44,10 @@ public class DictionaryImplTest {
         final int size = 100;
 
         for (int i = 0; i < size; i++) {
+            assertEquals(null, d.remove(Integer.toString(i)));
+        }
+
+        for (int i = 0; i < size; i++) {
             assertEquals(null, d.put(Integer.toString(i), Integer.toString(1000 + i)));
         }
         assertEquals(d.size(), size);
@@ -68,4 +70,23 @@ public class DictionaryImplTest {
         }
     }
 
+    @Test
+    public void testAddRemove() {
+        Dictionary d = instance();
+        final int size = 100;
+
+        d.put("1", "10");
+        assertEquals("10", d.get("1"));
+        assertEquals(1, d.size());
+
+        d.remove("1");
+        assertEquals(0, d.size());
+
+        d.put("1", "20");
+        assertEquals("20", d.get("1"));
+        assertEquals(1, d.size());
+
+        d.remove("1");
+        assertEquals(0, d.size());
+    }
 }
