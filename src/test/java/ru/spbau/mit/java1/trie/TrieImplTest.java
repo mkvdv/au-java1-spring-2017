@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class TrieImplTest {
 
-    private static TrieImpl instance() {
+    private static Trie instance() {
         try {
             return (TrieImpl) Class.forName("ru.spbau.mit.java1.trie.TrieImpl").newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
@@ -17,7 +17,7 @@ public class TrieImplTest {
 
     @Test
     public void testAlphabetAddRemove() {
-        TrieImpl t = instance();
+        Trie t = instance();
 
         int counter = 0;
         try {
@@ -56,7 +56,7 @@ public class TrieImplTest {
     @Test
     public void testAddContainsSizeRemove() {
         // add - contains - size - remove - size - contains
-        TrieImpl t = instance();
+        Trie t = instance();
         String s = "abc";
 
         try {
@@ -82,7 +82,7 @@ public class TrieImplTest {
 
     @Test
     public void testPrefix1() {
-        TrieImpl t = instance();
+        Trie t = instance();
         String s = "abc";
 
         try {
@@ -109,7 +109,7 @@ public class TrieImplTest {
     @Test
     public void tesPrefix2() {
         // add - contains - prefix - add - prefix - remove - size - prefix
-        TrieImpl t = instance();
+        Trie t = instance();
         String s1 = "aBcde";
         String s2 = "aBcd";
         String s3 = "aBcdf";
@@ -172,7 +172,7 @@ public class TrieImplTest {
 
     @Test
     public void testPrefix3() {
-        TrieImpl t = instance();
+        Trie t = instance();
         String s1 = "fizz";
         String s2 = "buzz";
         String s3 = "bring";
@@ -220,8 +220,8 @@ public class TrieImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testBadSYmbol() throws IllegalArgumentException {
-        TrieImpl t = instance();
+    public void testBadSymbol() throws IllegalArgumentException {
+        Trie t = instance();
         String s1 = "time7:40";
 
         t.add(s1);

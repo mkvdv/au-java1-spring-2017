@@ -1,12 +1,13 @@
 package ru.spbau.mit.java1.trie;
 
+import java.io.*;
 
 /**
  * Class for implementation of trie task.
  */
-public class TrieImpl implements Trie {
+public class TrieImpl implements Trie, StreamSerializable {
     private static final int ALPHABET_SIZE = 26;
-    private final Vertex root;
+    private Vertex root;
     private int size; // number of words in tree
 
     TrieImpl() {
@@ -157,11 +158,27 @@ public class TrieImpl implements Trie {
         return 0;
     }
 
-    class Vertex {
+    @Override
+    public void serialize(OutputStream out) throws IOException {
+        DataOutputStream dos = new DataOutputStream(out);
+        dos.writeInt(size);
+        root.serializeWith(dos);
+    }
+
+    /**
+     * Replace current state with data from input stream
+     */
+    @Override
+    public void deserialize(InputStream in) throws IOException {
+        DataInputStream dis = new DataInputStream(in);
+        size = dis.readInt();
+        root = Vertex.deserailizeWith(dis);
+    }
+
+    static class Vertex {
         private Vertex upperNext[]; // for uppercase letters
         private Vertex lowerNext[]; // for lowercase letters
         private boolean isEndOfWord;
-
         // how Many Words Starts With Prefix, which ends in this vertex
         private int startsWithThis;
 
@@ -170,6 +187,66 @@ public class TrieImpl implements Trie {
             lowerNext = new Vertex[ALPHABET_SIZE];
             isEndOfWord = false;
             startsWithThis = 0;
+        }
+
+        static Vertex deserailizeWith(DataInputStream dis) throws IOException {
+            Vertex vertex = new Vertex();
+
+            vertex.isEndOfWord = dis.readBoolean();
+            vertex.startsWithThis = dis.readInt();
+
+            // get boolean arrays of existed verticies for easy restoring
+            boolean[] lowerVerticiesExisted = new boolean[ALPHABET_SIZE];
+            boolean[] upperVerticiesExisted = new boolean[ALPHABET_SIZE];
+
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                lowerVerticiesExisted[i] = dis.readBoolean();
+            }
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                upperVerticiesExisted[i] = dis.readBoolean();
+            }
+
+            // deserialize verticies for existed recursively
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                if (lowerVerticiesExisted[i]) {
+                    vertex.lowerNext[i] = deserailizeWith(dis);
+                }
+            }
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                if (upperVerticiesExisted[i]) {
+                    vertex.upperNext[i] = deserailizeWith(dis);
+                }
+            }
+
+            return vertex;
+        }
+
+        // recursively serialize all nodes
+        void serializeWith(DataOutputStream dos) throws IOException {
+            // serialize object metadata
+            dos.writeBoolean(isEndOfWord);
+            dos.writeInt(startsWithThis);
+
+            //serialize array / links
+            // write boolean array, bool for every node in upperNext -- true if link exists
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                dos.writeBoolean(lowerNext[i] != null);
+            }
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                dos.writeBoolean(upperNext[i] != null);
+            }
+
+            // now really serialize nodes
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                if (lowerNext[i] != null) {
+                    lowerNext[i].serializeWith(dos);
+                }
+            }
+            for (int i = 0; i < ALPHABET_SIZE; i++) {
+                if (upperNext[i] != null) {
+                    upperNext[i].serializeWith(dos);
+                }
+            }
         }
 
         boolean isEndOfWord() {
