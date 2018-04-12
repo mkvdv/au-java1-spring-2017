@@ -1,5 +1,7 @@
 package ru.spbau.mit.java1.trie;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 
 /**
@@ -23,10 +25,7 @@ public class TrieImpl implements Trie, StreamSerializable {
      * element
      */
     @Override
-    public boolean add(String element) throws IllegalArgumentException {
-        if (element == null) {
-            throw new IllegalArgumentException("element argument is null");
-        }
+    public boolean add(@NotNull String element) throws IllegalArgumentException {
         if (contains(element)) {
             return false;
         }
@@ -59,11 +58,7 @@ public class TrieImpl implements Trie, StreamSerializable {
      * @param element
      */
     @Override
-    public boolean contains(String element) throws IllegalArgumentException {
-        if (element == null) {
-            throw new IllegalArgumentException("element argument is null");
-        }
-
+    public boolean contains(@NotNull String element) throws IllegalArgumentException {
         int charProccessed = 0;
         Vertex cur = root;
 
@@ -85,10 +80,7 @@ public class TrieImpl implements Trie, StreamSerializable {
      * @return <tt>true</tt> if this set contained the specified element
      */
     @Override
-    public boolean remove(String element) throws IllegalArgumentException {
-        if (element == null) {
-            throw new IllegalArgumentException("element argument is null");
-        }
+    public boolean remove(@NotNull String element) throws IllegalArgumentException {
         if (!contains(element)) {
             return false;
         }
@@ -137,10 +129,7 @@ public class TrieImpl implements Trie, StreamSerializable {
      * @param prefix
      */
     @Override
-    public int howManyStartsWithPrefix(String prefix) throws IllegalArgumentException {
-        if (prefix == null) {
-            throw new IllegalArgumentException("element argument is null");
-        }
+    public int howManyStartsWithPrefix(@NotNull String prefix) throws IllegalArgumentException {
         int ix = 0;
         Vertex cur = root;
 
@@ -159,7 +148,7 @@ public class TrieImpl implements Trie, StreamSerializable {
     }
 
     @Override
-    public void serialize(OutputStream out) throws IOException {
+    public void serialize(@NotNull OutputStream out) throws IOException {
         DataOutputStream dos = new DataOutputStream(out);
         dos.writeInt(size);
         root.serializeWith(dos);
@@ -169,7 +158,7 @@ public class TrieImpl implements Trie, StreamSerializable {
      * Replace current state with data from input stream
      */
     @Override
-    public void deserialize(InputStream in) throws IOException {
+    public void deserialize(@NotNull InputStream in) throws IOException {
         DataInputStream dis = new DataInputStream(in);
         size = dis.readInt();
         root = Vertex.deserailizeWith(dis);
@@ -189,7 +178,7 @@ public class TrieImpl implements Trie, StreamSerializable {
             startsWithThis = 0;
         }
 
-        static Vertex deserailizeWith(DataInputStream dis) throws IOException {
+        static Vertex deserailizeWith(@NotNull DataInputStream dis) throws IOException {
             Vertex vertex = new Vertex();
 
             vertex.isEndOfWord = dis.readBoolean();
