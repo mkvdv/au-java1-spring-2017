@@ -9,7 +9,7 @@ public class DictionaryImpl implements Dictionary {
     private static final double MIN_FILL_FACTOR = 0.25; // пусть заполнена не менее чем на 25%
     private static final int DEFAULT_MAX_SIZE = 64; // 2 ** 7, минимальный размер таблицы
     private final int maxChainLength;
-    private int maxSize = DEFAULT_MAX_SIZE;
+    private int maxSize = DEFAULT_MAX_SIZE; // greater or equal to DEFAULT_MAX_SIZE
     private int size = 0;
     private ArrayList<LinkedList<Node>> table = new ArrayList<>(maxSize);
 
@@ -146,7 +146,11 @@ public class DictionaryImpl implements Dictionary {
         }
 
         public int hashCode() {
-            return key.hashCode();
+            int hashValue = key.hashCode();
+            if (hashValue == Integer.MIN_VALUE) {
+                return 0;
+            }
+            return Math.abs(hashValue);
         }
 
         public boolean equals(@NotNull Node other) {
