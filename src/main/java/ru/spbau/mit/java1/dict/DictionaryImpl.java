@@ -133,7 +133,11 @@ public class DictionaryImpl implements Dictionary {
     }
 
     private int myHash(@NotNull String key) {
-        return key.hashCode() % maxSize;
+        int hashValue = key.hashCode();
+        if (hashValue == Integer.MIN_VALUE) {
+            hashValue = 0;
+        }
+        return Math.abs(hashValue) % maxSize;
     }
 
     private static class Node {
