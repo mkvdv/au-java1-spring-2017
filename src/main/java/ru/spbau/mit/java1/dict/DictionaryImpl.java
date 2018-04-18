@@ -9,9 +9,9 @@ public class DictionaryImpl implements Dictionary {
     private static final double MIN_FILL_FACTOR = 0.25; // пусть заполнена не менее чем на 25%
     private static final int DEFAULT_MAX_SIZE = 64; // 2 ** 7, минимальный размер таблицы
     private final int maxChainLength;
-    private int maxSize = DEFAULT_MAX_SIZE; // greater or equal to DEFAULT_MAX_SIZE
+    private int numberOfBuckets = DEFAULT_MAX_SIZE; // greater or equal to DEFAULT_MAX_SIZE
     private int size = 0;
-    private ArrayList<LinkedList<Node>> table = new ArrayList<>(maxSize);
+    private ArrayList<LinkedList<Node>> table = new ArrayList<>(numberOfBuckets);
 
     DictionaryImpl(int maxChainLength) {
         if (maxChainLength < 0) {
@@ -19,7 +19,7 @@ public class DictionaryImpl implements Dictionary {
         }
         this.maxChainLength = maxChainLength;
 
-        for (int i = 0; i < maxSize; i++) {
+        for (int i = 0; i < numberOfBuckets; i++) {
             table.add(new LinkedList<>());
         }
     }
@@ -58,10 +58,10 @@ public class DictionaryImpl implements Dictionary {
             prev = chain.get(indexInChain).value;
             chain.set(indexInChain, new Node(key, value));
         } else {
-            if (chain.size() < maxChainLength && size < maxSize) {
+            if (chain.size() < maxChainLength && size < numberOfBuckets) {
                 chain.add(new Node(key, value));
             } else {
-                rehash(size * 2); // increase size
+                rehash(numberOfBuckets * 2);
                 chain = table.get(myHash(key));
                 chain.add(new Node(key, value));
             }
@@ -80,8 +80,8 @@ public class DictionaryImpl implements Dictionary {
         if (indexInChain != -1) { // contains
             value = chain.get(indexInChain).value; // save for returning
 
-            if ((double) size / maxSize < MIN_FILL_FACTOR && size > DEFAULT_MAX_SIZE) {
-                rehash(size / 2); // reduce size
+            if ((double) size / numberOfBuckets < MIN_FILL_FACTOR && numberOfBuckets > DEFAULT_MAX_SIZE) {
+                rehash(numberOfBuckets / 2);
             }
             chain = table.get(myHash(key)); // they can change after rehash
             indexInChain = getKeyIndexInChain(chain, key);
@@ -93,13 +93,13 @@ public class DictionaryImpl implements Dictionary {
         return value;
     }
 
-    private void rehash(int newMaxSize) {
-        assert newMaxSize > 0;
+    private void rehash(int newNumberOfBuckets) {
+        assert newNumberOfBuckets > 0;
 
-        maxSize = newMaxSize; // so hash will be another
-        ArrayList<LinkedList<Node>> newTable = new ArrayList<>(newMaxSize);
+        numberOfBuckets = newNumberOfBuckets; // so hash will be another
+        ArrayList<LinkedList<Node>> newTable = new ArrayList<>(newNumberOfBuckets);
 
-        for (int i = 0; i < maxSize; i++) {
+        for (int i = 0; i < numberOfBuckets; i++) {
             newTable.add(new LinkedList<>());
         }
 
@@ -137,7 +137,7 @@ public class DictionaryImpl implements Dictionary {
         if (hashValue == Integer.MIN_VALUE) {
             hashValue = 0;
         }
-        return Math.abs(hashValue) % maxSize;
+        return Math.abs(hashValue) % numberOfBuckets;
     }
 
     private static class Node {
