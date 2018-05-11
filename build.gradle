@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'com.google.guava', name: 'guava', version: 19.0
 
     //dependencies from a remote repository
     compile group: 'org.jetbrains', name: 'annotations', version: '13.0'
